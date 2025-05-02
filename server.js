@@ -1,8 +1,10 @@
 const express = require('express');
-const mongos = require('mongoose');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const listEndpoints = require("express-list-endpoints");
 require('dotenv').config();
+
+const seedAdminUser = require('./seeder/seedAdmin'); 
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,26 +14,32 @@ app.use(cors());
 app.use(express.json());
 
 // Connect MongoDB
-mongos.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error(err));
-
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(async () => {
+  console.log("✅ MongoDB connected");
+  await seedAdminUser(); // <-- Run admin seeder
+})
+.catch(err => console.error('❌ MongoDB connection error:', err));
 
 // Routes placeholder
 app.get('/', (req, res) => {
-    res.send("Job Board API Running");
-  });
+  res.send("Job Board API Running");
+});
 
-const authRoute = require('./routes/authRoutes')
+const authRoute = require('./routes/authRoutes');
 const jobRoutes = require("./routes/jobRoutes");
-app.use("/api/auth", authRoute)
-app.use("/api/jobs", jobRoutes)
 
+app.use("/api/auth", authRoute);
+app.use("/api/jobs", jobRoutes);
+
+// List endpoints
 const endpoints = listEndpoints(app);
-console.log(endpoints);
+console.log('📋 API Endpoints:', endpoints);
 
-
-
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
