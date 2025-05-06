@@ -14,10 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 // Connect MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(process.env.MONGO_URI)
 .then(async () => {
   console.log("✅ MongoDB connected");
   await seedAdminUser(); // <-- Run admin seeder
