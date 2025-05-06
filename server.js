@@ -28,9 +28,12 @@ app.get('/', (req, res) => {
 
 const authRoute = require('./routes/authRoutes');
 const jobRoutes = require("./routes/jobRoutes");
+const likeRoutes = require("./routes/likeRoutes");
+
 
 app.use("/api/auth", authRoute);
 app.use("/api/jobs", jobRoutes);
+app.use("/api",likeRoutes);
 
 // List endpoints
 const endpoints = listEndpoints(app);
